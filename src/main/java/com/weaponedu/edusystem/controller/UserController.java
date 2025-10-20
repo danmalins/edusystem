@@ -5,12 +5,9 @@ import com.weaponedu.edusystem.dto.AuthResponseDTO;
 import com.weaponedu.edusystem.dto.UserRegistrationRequestDTO;
 import com.weaponedu.edusystem.dto.UserUpdateRequestDTO;
 import com.weaponedu.edusystem.model.User;
-import com.weaponedu.edusystem.service.JwtService;
 import com.weaponedu.edusystem.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
