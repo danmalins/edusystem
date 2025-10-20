@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
         if (!isAdmin(authentication) && !username.equals(authentication.getName())) {
             throw new SecurityException("You can only view your own profile.");
         }
-        if (userRepository.existsByUsername(username)) {
+        if (!userRepository.existsByUsername(username)) {
             throw new EntityExistsException("User with username '" + username + "' already exists.");
         }
         return userRepository.findByUsername(username);
@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
         if (!isAdmin(authentication)) {
             throw new SecurityException("Only admin can delete users.");
         }
-        if (userRepository.existsByUsername(username)) {
+        if (!userRepository.existsByUsername(username)) {
             throw new EntityExistsException("User with username '" + username + "' already exists.");
         }
         User userToDelete = getUserByUsername(username, authentication);

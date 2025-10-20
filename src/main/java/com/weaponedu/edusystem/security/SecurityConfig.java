@@ -53,12 +53,13 @@ public class SecurityConfig {
                 // 3. Визначення правил авторизації
                 .authorizeHttpRequests(auth -> auth
                         // Дозволити доступ до кінцевих точок аутентифікації без токена
-                        .requestMatchers("/users/signup", "/users/login").permitAll()
+                        .requestMatchers("/users/signup").permitAll()
+                        .requestMatchers("/users/login").permitAll()
 
                         // Усі інші запити повинні бути аутентифіковані
                         .anyRequest().authenticated()
                 )
-               .httpBasic(Customizer.withDefaults())
+               //.httpBasic(Customizer.withDefaults())
                .sessionManagement(session -> session
                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                )

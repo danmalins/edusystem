@@ -59,4 +59,10 @@ public class UserController {
         User updatedUser = userService.updateUser(username, updateDTO, authentication);
         return ResponseEntity.ok(updatedUser);
     }
+
+    @DeleteMapping("/{username}")
+    public ResponseEntity<String> deleteUser(@PathVariable String username, Authentication authentication) {
+        userService.deleteUserByUsername(username, authentication);
+        return ResponseEntity.ok("User deleted successfully!");
+    }
 }

@@ -2,18 +2,17 @@ package com.weaponedu.edusystem.model;
 
 import com.weaponedu.edusystem.model.Enums.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Table(name = "users",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = "username")
-        })
+@Table(name = "app_user")
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@Builder
 public class User {
 
     @Id
@@ -21,9 +20,11 @@ public class User {
     private Long id;
 
     // Логін користувача (має бути унікальним)
+    @Column(nullable = false)
     private String username;
 
     // Пароль буде збережений у вигляді хешу
+    @Column(nullable = false)
     private String password;
 
     // Інші поля користувача (email, ім'я, тощо) можна додати тут
@@ -32,7 +33,7 @@ public class User {
     // Зв'язок Many-to-Many для реалізації RBAC
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    Role role;
+    private Role role;
 
     // Конструктор для зручності реєстрації
     public User(String username, String password) {
