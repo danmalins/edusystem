@@ -3,6 +3,7 @@ package com.weaponedu.edusystem.service;
 import com.weaponedu.edusystem.dto.AuthRequestDTO;
 import com.weaponedu.edusystem.dto.UserRegistrationRequestDTO;
 import com.weaponedu.edusystem.dto.UserUpdateRequestDTO; // Потрібно створити цей DTO
+import com.weaponedu.edusystem.dto.UserUpdateRoleRequestDTO;
 import com.weaponedu.edusystem.model.User;
 import org.springframework.security.core.Authentication;
 
@@ -25,4 +26,6 @@ public interface UserService {
 
     // DELETE
     void deleteUserByUsername(String username, Authentication authentication);
+
+    User updateUserRole(String username, UserUpdateRoleRequestDTO userUpdateRoleRequestDTO, Authentication authentication);
 }

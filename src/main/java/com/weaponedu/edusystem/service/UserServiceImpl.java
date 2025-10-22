@@ -3,11 +3,13 @@ package com.weaponedu.edusystem.service;
 import com.weaponedu.edusystem.dto.AuthRequestDTO;
 import com.weaponedu.edusystem.dto.UserRegistrationRequestDTO;
 import com.weaponedu.edusystem.dto.UserUpdateRequestDTO;
+import com.weaponedu.edusystem.dto.UserUpdateRoleRequestDTO;
 import com.weaponedu.edusystem.model.Enums.Role;
 import com.weaponedu.edusystem.model.User;
 import com.weaponedu.edusystem.repository.UserRepository;
 import com.weaponedu.edusystem.security.MyUserDetails;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -135,7 +137,20 @@ public class UserServiceImpl implements UserService {
             userToUpdate.setPassword(passwordEncoder.encode(updateRequestDTO.getPassword()));
         }
 
-        // TODO: Додайте логіку оновлення ролей тут, якщо це робить ADMIN
+        return userRepository.save(userToUpdate);
+    }
+
+    @Override
+    public User updateUserRole(String username, UserUpdateRoleRequestDTO updateRoleRequestDTO, Authentication authentication) {
+        if (!isAdmin(authentication)) {
+            throw new SecurityException("You can only update your own profile.");
+        }
+        if (!userRepository.existsByUsername(username)) {
+            throw new EntityNotFoundException("User with username '" + username + "' does not exists.");
+        }
+
+        User userToUpdate = getUserByUsername(username, authentication);
+        userToUpdate.setRole(updateRoleRequestDTO.getRole());
 
         return userRepository.save(userToUpdate);
     }

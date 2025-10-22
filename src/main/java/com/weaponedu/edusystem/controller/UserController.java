@@ -1,9 +1,7 @@
 package com.weaponedu.edusystem.controller;
 
-import com.weaponedu.edusystem.dto.AuthRequestDTO;
-import com.weaponedu.edusystem.dto.AuthResponseDTO;
-import com.weaponedu.edusystem.dto.UserRegistrationRequestDTO;
-import com.weaponedu.edusystem.dto.UserUpdateRequestDTO;
+import com.weaponedu.edusystem.dto.*;
+import com.weaponedu.edusystem.model.Enums.Role;
 import com.weaponedu.edusystem.model.User;
 import com.weaponedu.edusystem.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -61,5 +59,12 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable String username, Authentication authentication) {
         userService.deleteUserByUsername(username, authentication);
         return ResponseEntity.ok("User deleted successfully!");
+    }
+
+    @PutMapping("/role/{username}")
+    public ResponseEntity<User> updateUserRole(@PathVariable String username,
+                                               @RequestBody UserUpdateRoleRequestDTO userUpdateRoleRequestDTO, Authentication authentication) {
+        User updatedUser = userService.updateUserRole(username, userUpdateRoleRequestDTO, authentication);
+        return ResponseEntity.ok(updatedUser);
     }
 }
