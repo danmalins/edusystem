@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 public interface UserService {
-
     // Аутентифікація та JWT
     String verifyAndReturnToken(AuthRequestDTO userCredentials); // Використовуємо LoginRequest як вхід
 

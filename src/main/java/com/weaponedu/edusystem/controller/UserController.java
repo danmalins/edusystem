@@ -1,7 +1,6 @@
 package com.weaponedu.edusystem.controller;
 
 import com.weaponedu.edusystem.dto.*;
-import com.weaponedu.edusystem.model.Enums.Role;
 import com.weaponedu.edusystem.model.User;
 import com.weaponedu.edusystem.service.UserService;
 import lombok.RequiredArgsConstructor;
