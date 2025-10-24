@@ -23,10 +23,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * Загружает объект пользователя по его логину (username).
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if(username == null ||  username.isBlank())
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        if(email == null ||  email.isBlank())
             throw new UsernameNotFoundException("User not found");
+        User user = userRepository.findByEmail(email);
         return new MyUserDetails(user);
     }
 }

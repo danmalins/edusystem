@@ -1,9 +1,11 @@
 package com.weaponedu.edusystem.controller;
 
 import com.weaponedu.edusystem.dto.*;
+import com.weaponedu.edusystem.model.Enums.Role;
 import com.weaponedu.edusystem.model.User;
 import com.weaponedu.edusystem.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +54,17 @@ public class UserController {
             Authentication authentication) {
         User updatedUser = userService.updateUser(username, updateDTO, authentication);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @PutMapping("{username}/security-level")
+    public ResponseEntity<String> updateUserSecurityLevel(
+            @PathVariable String username,
+            @RequestBody SecurityLevelRequestDTO securityLevelRequestDTO,
+            Authentication authentication) {
+
+        // Оновлюємо рівень користувача, якого передали в URL
+        userService.updateUserSecurityLevel(username, securityLevelRequestDTO.getSecurityLevel(), authentication);
+        return ResponseEntity.ok("Security level updated successfully for user " + username);
     }
 
     @DeleteMapping("/{username}")

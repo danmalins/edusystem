@@ -2,6 +2,7 @@ package com.weaponedu.edusystem.controller;
 
 import com.weaponedu.edusystem.dto.WeaponUpdateRequestDTO;
 import com.weaponedu.edusystem.model.Weapon;
+import com.weaponedu.edusystem.service.UserService;
 import com.weaponedu.edusystem.service.WeaponService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.util.List;
 public class WeaponController {
 
     private final WeaponService weaponService;
+    private final UserService userService;
 
     // --- CREATE ---
 
@@ -29,14 +31,14 @@ public class WeaponController {
     // --- READ ---
 
     @GetMapping
-    public ResponseEntity<List<Weapon>> getAllWeapons() {
-        List<Weapon> weapons = weaponService.getAllWeapons();
+    public ResponseEntity<List<Weapon>> getAllWeapons(Authentication authentication) {
+        List<Weapon> weapons = weaponService.getAllWeapons(authentication);
         return ResponseEntity.ok(weapons);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Weapon> getWeaponById(@PathVariable Long id) {
-        Weapon weapon = weaponService.getWeaponById(id);
+    public ResponseEntity<Weapon> getWeaponById(@PathVariable Long id, Authentication authentication) {
+        Weapon weapon = weaponService.getWeaponById(id, authentication);
         return ResponseEntity.ok(weapon);
     }
 

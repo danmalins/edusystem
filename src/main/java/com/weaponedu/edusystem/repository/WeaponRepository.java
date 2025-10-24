@@ -10,14 +10,7 @@ import java.util.Optional;
 // Weapon - тип сутності, Long - тип ID
 @Repository // Хоча це не обов'язково для JpaRepository, це хороша практика.
 public interface WeaponRepository extends JpaRepository<Weapon, Long> {
+    List<Weapon> findBySecretLevelLessThanEqual(int secretLevel);
 
-    // Spring Data JPA автоматично надасть такі методи, як:
-    // 1. save() - для створення та оновлення
-    // 2. findById() - для отримання за ID
-    // 3. findAll() - для отримання всіх
-    // 4. delete() - для видалення
-
-    // Тут ми можемо додати додаткові методи, якщо вони знадобляться:
-    Optional<Weapon> findByName(String name);
-    //List<Weapon> findAllByDifficultyLevel(String level);
+    //Optional<Weapon> findByName(String name);
 }

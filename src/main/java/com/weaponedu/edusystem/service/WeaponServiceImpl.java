@@ -2,7 +2,9 @@ package com.weaponedu.edusystem.service;
 
 import com.weaponedu.edusystem.dto.WeaponUpdateRequestDTO;
 import com.weaponedu.edusystem.model.Enums.Role;
+import com.weaponedu.edusystem.model.User;
 import com.weaponedu.edusystem.model.Weapon;
+import com.weaponedu.edusystem.repository.UserRepository;
 import com.weaponedu.edusystem.repository.WeaponRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.List;
 public class WeaponServiceImpl implements WeaponService{
 
     private final WeaponRepository weaponRepository;
+    private final UserRepository userRepository;
 
     private boolean isAdminOrMentor(Authentication authentication) {
         return authentication.getAuthorities().stream()
@@ -25,42 +28,44 @@ public class WeaponServiceImpl implements WeaponService{
                 .anyMatch(role -> role.equals(Role.ROLE_ADMIN.name()) || role.equals(Role.ROLE_MENTOR.name()));
     }
 
-    /**
-     * Створити нове озброєння.
-     */
     @Transactional
     @Override
     public Weapon createWeapon(Weapon weapon, Authentication authentication) {
         if (!isAdminOrMentor(authentication)) {
             throw new SecurityException("Access Denied: Only Admin or Mentor can create new weapons.");
         }
-        // У більш складній логіці тут можна додати перевірку,
-        // чи вже існує озброєння з такою назвою.
+
         return weaponRepository.save(weapon);
     }
 
-    /**
-     * Отримати список всього озброєння.
-     */
     @Override
-    public List<Weapon> getAllWeapons() {
-        return weaponRepository.findAll();
+    public List<Weapon> getAllWeapons(Authentication authentication) {
+        User user = userRepository.findByEmail(authentication.getName());
+
+        if (user.getRole().equals(Role.ROLE_ADMIN) || user.getRole().equals(Role.ROLE_MENTOR)) {
+            // Ментори та адміні можуть бачити всі матеріали
+            return weaponRepository.findAll();
+        }
+
+        // Студент бачить тільки матеріали до свого рівня секретності включно
+        return weaponRepository.findBySecretLevelLessThanEqual(user.getSecurityLevel());
     }
 
-    /**
-     * Отримати озброєння за ID.
-     */
     @Override
-    public Weapon getWeaponById(Long id) {
-        return weaponRepository.findById(id)
+    public Weapon getWeaponById(Long id, Authentication authentication) {
+        Weapon weapon = weaponRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Weapon not found with ID: " + id));
+
+        User user = userRepository.findByEmail(authentication.getName());
+
+        if (weapon.getSecretLevel() > user.getSecurityLevel()
+                && !(user.getRole() == Role.ROLE_ADMIN || user.getRole() == Role.ROLE_MENTOR)) {
+            throw new SecurityException("Access denied: insufficient clearance level.");
+        }
+
+        return weapon;
     }
 
-    /**
-     * Оновити існуюче озброєння.
-     * @param id ID озброєння для оновлення.
-     * @param updatedWeapon Нові дані.
-     */
     @Transactional
     @Override
     public Weapon updateWeapon(Long id, WeaponUpdateRequestDTO updatedWeapon, Authentication authentication) {
@@ -74,13 +79,11 @@ public class WeaponServiceImpl implements WeaponService{
         existingWeapon.setName(updatedWeapon.getName());
         existingWeapon.setType(updatedWeapon.getType());
         existingWeapon.setDescription(updatedWeapon.getDescription());
+        existingWeapon.setSecretLevel(updatedWeapon.getSecretLevel());
 
         return weaponRepository.save(existingWeapon);
     }
 
-    /**
-     * Видалити озброєння за ID.
-     */
     @Transactional
     @Override
     public void deleteWeapon(Long id, Authentication authentication ) {
@@ -91,5 +94,10 @@ public class WeaponServiceImpl implements WeaponService{
             throw new EntityNotFoundException("Weapon not found with ID: " + id);
         }
         weaponRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Weapon> getAvailableMaterials(User user) {
+        return List.of();
     }
 }

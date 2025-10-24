@@ -10,6 +10,6 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 public class AuthRequestDTO {
-    String username;
+    String email;
     String password;
 }

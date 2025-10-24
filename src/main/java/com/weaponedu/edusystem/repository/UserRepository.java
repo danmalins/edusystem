@@ -3,6 +3,8 @@ package com.weaponedu.edusystem.repository;
 import com.weaponedu.edusystem.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 // User - тип сутності, Long - тип ID
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -17,4 +19,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Необхідно для запобігання дублюванню під час реєстрації.
      */
     Boolean existsByUsername(String username);
+
+    Boolean existsByEmail(String email);
+
+    User findByEmail(String email);
 }

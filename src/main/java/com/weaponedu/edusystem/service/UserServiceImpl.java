@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-// Замінюємо @RequiredArgsConstructor на класичний конструктор
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -33,9 +32,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    /**
-     * Перевіряє, чи має користувач роль ROLE_ADMIN.
-     */
     private boolean isAdmin(Authentication authentication) {
         // Перевіряємо, чи є серед прав доступу роль ROLE_ADMIN (як рядок)
         return authentication.getAuthorities().stream()
@@ -45,39 +41,29 @@ public class UserServiceImpl implements UserService {
 
     // --- CRUD + БЕЗПЕКА ---
 
-    /**
-     * Метод для входу та генерації токена.
-     */
     @Override
     public String verifyAndReturnToken(AuthRequestDTO userCredentials) {
         try {
-            // Аутентифікація через Spring Security
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(userCredentials.getUsername(), userCredentials.getPassword()));
-
-            // Важливо: встановлення контексту не потрібне для генерації токена, але може бути корисним.
+                    new UsernamePasswordAuthenticationToken(userCredentials.getEmail(), userCredentials.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-            User authenticatedUser = userDetails.getUser();
-
-            // Генерація та повернення JWT
-            return jwtService.generateToken(authenticatedUser.getUsername(), authenticatedUser.getRole().name());
-
+            MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+            User authenticatedUser = myUserDetails.getUser();
+            return jwtService.generateToken(authenticatedUser.getEmail(), authenticatedUser.getRole().name());
         } catch (BadCredentialsException e) {
-            // Кидаємо виняток, якщо облікові дані невірні
-            throw new BadCredentialsException("Wrong username or password.");
+            throw new BadCredentialsException("Wrong email or password.");
         }
     }
 
-
-    /**
-     * Реєстрація нового користувача (за замовчуванням ROLE_STUDENT).
-     */
     @Override
     @Transactional
     public User registerNewUser(UserRegistrationRequestDTO registrationRequest) {
         if (userRepository.existsByUsername(registrationRequest.getUsername())) {
             throw new EntityExistsException("User with username '" + registrationRequest.getUsername() + "' already exists.");
+        }
+
+        if (userRepository.existsByEmail(registrationRequest.getEmail())) {
+            throw new EntityExistsException("User with email '" + registrationRequest.getEmail() + "' already exists.");
         }
 
         User user = new User(
@@ -86,7 +72,9 @@ public class UserServiceImpl implements UserService {
         );
 
 
+        user.setEmail(registrationRequest.getEmail());
         user.setRole(Role.ROLE_STUDENT);
+        user.setSecurityLevel(1);
 
         return userRepository.save(user);
     }
@@ -153,6 +141,25 @@ public class UserServiceImpl implements UserService {
         userToUpdate.setRole(updateRoleRequestDTO.getRole());
 
         return userRepository.save(userToUpdate);
+    }
+
+    @Override
+    public void updateUserSecurityLevel(String username, int securityLevel, Authentication authentication) {
+        if (!isAdmin(authentication)) {
+            throw new SecurityException("Only admin can update security level.");
+        }
+        User user = userRepository.findByUsername(username);
+
+        if (user == null) {
+            throw new EntityNotFoundException("User with username '" + username + "' not found.");
+        }
+
+        if (securityLevel < 1 || securityLevel > 3) {
+            throw new IllegalArgumentException("Invalid security level. Must be between 1 and 3.");
+        }
+
+        user.setSecurityLevel(securityLevel);
+        userRepository.save(user);
     }
 
     // --- DELETE (З ЗАХИСТОМ) ---

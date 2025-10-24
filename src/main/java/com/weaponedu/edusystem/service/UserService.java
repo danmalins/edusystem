@@ -10,21 +10,12 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 public interface UserService {
-    // Аутентифікація та JWT
     String verifyAndReturnToken(AuthRequestDTO userCredentials); // Використовуємо LoginRequest як вхід
-
-    // Реєстрація
     User registerNewUser(UserRegistrationRequestDTO registrationRequest);
-
-    // READ
     List<User> getAllUsers(Authentication authentication);
     User getUserByUsername(String username, Authentication authentication);
-
-    // UPDATE
     User updateUser(String username, UserUpdateRequestDTO updateRequestDTO, Authentication authentication);
-
-    // DELETE
     void deleteUserByUsername(String username, Authentication authentication);
-
     User updateUserRole(String username, UserUpdateRoleRequestDTO userUpdateRoleRequestDTO, Authentication authentication);
+    void updateUserSecurityLevel(String username, int level, Authentication authentication);
 }
