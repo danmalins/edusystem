@@ -2,7 +2,6 @@ package com.weaponedu.edusystem.controller;
 
 import com.weaponedu.edusystem.dto.WeaponUpdateRequestDTO;
 import com.weaponedu.edusystem.model.Weapon;
-import com.weaponedu.edusystem.service.UserService;
 import com.weaponedu.edusystem.service.WeaponService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,6 @@ import java.util.List;
 public class WeaponController {
 
     private final WeaponService weaponService;
-    private final UserService userService;
 
     // --- CREATE ---
 

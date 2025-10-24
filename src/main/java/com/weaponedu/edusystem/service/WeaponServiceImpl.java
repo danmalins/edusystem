@@ -95,9 +95,4 @@ public class WeaponServiceImpl implements WeaponService{
         }
         weaponRepository.deleteById(id);
     }
-
-    @Override
-    public List<Weapon> getAvailableMaterials(User user) {
-        return List.of();
-    }
 }
