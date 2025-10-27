@@ -53,8 +53,8 @@ public class SecurityConfig {
                 // 3. Визначення правил авторизації
                 .authorizeHttpRequests(auth -> auth
                         // Дозволити доступ до кінцевих точок аутентифікації без токена
-                        .requestMatchers("/users/signup").permitAll()
-                        .requestMatchers("/users/login").permitAll()
+                        .requestMatchers("/api/users/signup").permitAll()
+                        .requestMatchers("/api/users/login").permitAll()
                         .requestMatchers("/api/weapons").permitAll()
                         .requestMatchers("/api/weapons/{id}").permitAll()
 
