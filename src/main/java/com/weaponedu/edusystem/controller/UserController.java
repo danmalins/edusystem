@@ -1,7 +1,6 @@
 package com.weaponedu.edusystem.controller;
 
 import com.weaponedu.edusystem.dto.*;
-import com.weaponedu.edusystem.model.Enums.Role;
 import com.weaponedu.edusystem.model.User;
 import com.weaponedu.edusystem.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +61,6 @@ public class UserController {
             @RequestBody SecurityLevelRequestDTO securityLevelRequestDTO,
             Authentication authentication) {
 
-        // Оновлюємо рівень користувача, якого передали в URL
         userService.updateUserSecurityLevel(username, securityLevelRequestDTO.getSecurityLevel(), authentication);
         return ResponseEntity.ok("Security level updated successfully for user " + username);
     }

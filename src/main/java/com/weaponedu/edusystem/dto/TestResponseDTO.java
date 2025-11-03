@@ -6,6 +6,7 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
-public class AuthResponseDTO {
-    private String accessToken;
+public class TestResponseDTO {
+    private Long id;
+    private String title;
 }

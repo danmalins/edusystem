@@ -55,8 +55,6 @@ public class SecurityConfig {
                         // Дозволити доступ до кінцевих точок аутентифікації без токена
                         .requestMatchers("/api/users/signup").permitAll()
                         .requestMatchers("/api/users/login").permitAll()
-                        .requestMatchers("/api/weapons").permitAll()
-                        .requestMatchers("/api/weapons/{id}").permitAll()
 
                         // Усі інші запити повинні бути аутентифіковані
                         .anyRequest().authenticated()

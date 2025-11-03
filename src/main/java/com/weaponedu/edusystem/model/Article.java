@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "weapons")
+@Table(name = "article")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
-public class Weapon {
+public class Article {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +25,7 @@ public class Weapon {
     @Column(length = 2000)
     private String description;
 
-    // Рівень доступу або складності (може бути використано для RBAC або фільтрації)
     private int secretLevel; //(1,2,3)
 
-    // URL або шлях до навчального відео/документації
     private String resourceUrl;
 }

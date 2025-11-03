@@ -1,7 +1,7 @@
 package com.weaponedu.edusystem.service;
 
-import com.weaponedu.edusystem.dto.SubmitAnswerDTO;
-import com.weaponedu.edusystem.dto.TestResultDTO;
+import com.weaponedu.edusystem.dto.*;
+import com.weaponedu.edusystem.mapper.TestMapper;
 import com.weaponedu.edusystem.model.AnswerOption;
 import com.weaponedu.edusystem.model.Enums.Role;
 import com.weaponedu.edusystem.model.Question;
@@ -33,20 +33,24 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    public List<Test> getAllTests(Authentication authentication) {
-        return testRepository.findAll();
+    public List<TestResponseDTO> getAllTests(Authentication authentication) {
+        return testRepository.findAll()
+                .stream()
+                .map(TestMapper::toTestResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Test getTestById(Long id, Authentication authentication) {
-        return testRepository.findById(id)
+    public TestRequestDTO getTestById(Long id, Authentication authentication) {
+        Test test = testRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Test not found"));
+        return TestMapper.toTestRequestDTO(test);
     }
 
     @Override
     public Test createTest(Test test, Authentication authentication) {
         if (!isAdminOrMentor(authentication)) {
-            throw new SecurityException("Access Denied: Only Admin or Mentor can create new weapons.");
+            throw new SecurityException("Access Denied: Only Admin or Mentor can create new tests.");
         }
 
         if (test.getQuestions() != null) {
@@ -65,16 +69,15 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public TestResultDTO submitTest(Long testId, List<SubmitAnswerDTO> answers, Authentication authentication) {
-        Test test = getTestById(testId, authentication);
-        int total = test.getQuestions().size();
+        TestRequestDTO testDTO = getTestById(testId, authentication);
+        int total = testDTO.getQuestions().size();
         int correct = 0;
 
-        // Перетворюємо список у Map для швидкого доступу
         Map<Long, Long> answersMap = answers.stream()
                 .collect(Collectors.toMap(SubmitAnswerDTO::getQuestionId, SubmitAnswerDTO::getSelectedOptionId));
 
-        for (Question q : test.getQuestions()) {
-            Long selectedOptionId = answersMap.get(q.getId());
+        for (QuestionRequestDTO questionDTO : testDTO.getQuestions()) {
+            Long selectedOptionId = answersMap.get(questionDTO.getId());
             if (selectedOptionId == null) continue;
 
             AnswerOption selected = answerOptionRepository.findById(selectedOptionId).orElse(null);
@@ -88,7 +91,7 @@ public class TestServiceImpl implements TestService {
     @Override
     public void deleteTest(Long testId, Authentication authentication) {
         if (!isAdminOrMentor(authentication)) {
-            throw new SecurityException("Access Denied: Only Admin or Mentor can create new weapons.");
+            throw new SecurityException("Access Denied: Only Admin or Mentor can delete tests.");
         }
         if(!testRepository.existsById(testId)) {
             throw new SecurityException("Test not found");

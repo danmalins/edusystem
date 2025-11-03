@@ -1,6 +1,8 @@
 package com.weaponedu.edusystem.controller;
 
 import com.weaponedu.edusystem.dto.SubmitAnswerDTO;
+import com.weaponedu.edusystem.dto.TestRequestDTO;
+import com.weaponedu.edusystem.dto.TestResponseDTO;
 import com.weaponedu.edusystem.dto.TestResultDTO;
 import com.weaponedu.edusystem.model.Test;
 import com.weaponedu.edusystem.service.TestService;
@@ -19,12 +21,12 @@ public class TestController {
     private final TestService testService;
 
     @GetMapping
-    public List<Test> getAllTests(Authentication authentication) {
+    public List<TestResponseDTO> getAllTests(Authentication authentication) {
         return testService.getAllTests(authentication);
     }
 
     @GetMapping("/{id}")
-    public Test getTest(@PathVariable Long id, Authentication authentication) {
+    public TestRequestDTO getTest(@PathVariable Long id, Authentication authentication) {
         return testService.getTestById(id, authentication);
     }
 

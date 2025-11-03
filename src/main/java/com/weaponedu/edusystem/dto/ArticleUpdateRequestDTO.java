@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-public class WeaponUpdateRequestDTO {
+public class ArticleUpdateRequestDTO {
     private String name;
     private String type;
     private String description;

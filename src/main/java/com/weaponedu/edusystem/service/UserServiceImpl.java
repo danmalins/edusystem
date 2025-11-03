@@ -33,13 +33,10 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwtService;
 
     private boolean isAdmin(Authentication authentication) {
-        // Перевіряємо, чи є серед прав доступу роль ROLE_ADMIN (як рядок)
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(role -> role.equals(Role.ROLE_ADMIN.name()));
     }
-
-    // --- CRUD + БЕЗПЕКА ---
 
     @Override
     public String verifyAndReturnToken(AuthRequestDTO userCredentials) {
@@ -79,11 +76,8 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    // --- READ (З ЗАХИСТОМ) ---
-
     @Override
     public List<User> getAllUsers(Authentication authentication) {
-        // Доступ лише для адміністраторів
         if (!isAdmin(authentication)) {
             throw new SecurityException("Only admin can see all users.");
         }
@@ -101,8 +95,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username);
     }
 
-    // --- UPDATE (З ЗАХИСТОМ) ---
-
     @Override
     @Transactional
     public User updateUser(String username, UserUpdateRequestDTO updateRequestDTO, Authentication authentication) {
@@ -111,7 +103,6 @@ public class UserServiceImpl implements UserService {
             throw new EntityExistsException("User with username '" + username + "' already exists.");
         }
         User userToUpdate = getUserByUsername(username, authentication);
-        // Перевірка прав: тільки адмін або власник профілю може оновлювати
         if (!isAdmin(authentication) && !userToUpdate.getUsername().equals(authentication.getName())) {
             throw new SecurityException("You can only update your own profile.");
         }
@@ -120,7 +111,6 @@ public class UserServiceImpl implements UserService {
             userToUpdate.setUsername(updateRequestDTO.getUsername());
         }
 
-        // Оновлення пароля
         if (updateRequestDTO.getPassword() != null && !updateRequestDTO.getPassword().isBlank()) {
             userToUpdate.setPassword(passwordEncoder.encode(updateRequestDTO.getPassword()));
         }
@@ -162,12 +152,9 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    // --- DELETE (З ЗАХИСТОМ) ---
-
     @Override
     @Transactional
     public void deleteUserByUsername(String username, Authentication authentication) {
-        // Доступ лише для адміністраторів
         if (!isAdmin(authentication)) {
             throw new SecurityException("Only admin can delete users.");
         }
